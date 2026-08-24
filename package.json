@@ -1,0 +1,14 @@
+{
+  "name": "rent-a-car",
+  "version": "1.0.0",
+  "description": "Rent-a-Car Express application with beautiful UI and Swagger API Docs",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "swagger-ui-express": "^5.0.0"
+  },
+  "private": true
+}
