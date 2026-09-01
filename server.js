@@ -3,243 +3,781 @@ const path = require('path');
 const swaggerUi = require('swagger-ui-express');
 const fs = require('fs');
 
+const pool = require('./db');
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
-// In-memory Database
-const users = [
-  { email: 'vuk@example.com', password: 'password123', name: 'Vuk Ivanovic' }
-];
 
-const cars = [
-  {
-    id: 'tesla-s',
-    name: 'Tesla Model S Plaid',
-    type: 'electric',
-    transmission: 'automatic',
-    power: '1020 HP',
-    acceleration: '2.1s 0-100 km/h',
-    price: 150,
-    description: 'The quickest accelerating car in production. Model S Plaid features a tri-motor configuration delivering instantaneous torque and unmatched power while maintaining a clean, zero-emission profile.',
-    features: ['Autopilot', 'Trill-Motor AWD', 'Panoramic Glass Roof', '17-inch Cinematic Display', 'Premium Audio']
-  },
-  {
-    id: 'porsche-911',
-    name: 'Porsche 911 GT3',
-    type: 'gasoline',
-    transmission: 'automatic',
-    power: '502 HP',
-    acceleration: '3.4s 0-100 km/h',
-    price: 250,
-    description: 'Automotive racetrack engineering built for the open road. The 911 GT3 pairs an atmospheric 4.0-liter flat-six engine with a razor-sharp PDK transmission, providing an unmatched analog driving connection.',
-    features: ['4.0L Naturally Aspirated R6', 'Active Aerodynamics', 'Rear-Axle Steering', 'Carbon Fiber Seats', 'Sport Chrono Package']
-  },
-  {
-    id: 'bmw-m4',
-    name: 'BMW M4 Competition',
-    type: 'gasoline',
-    transmission: 'automatic',
-    power: '503 HP',
-    acceleration: '3.5s 0-100 km/h',
-    price: 120,
-    description: 'A benchmark in high-performance sports coupes. Featuring an inline-six M TwinPower Turbo engine and xDrive all-wheel control. Sporty exterior and a highly customizable interior.',
-    features: ['TwinPower Turbo Inline-6', 'M xDrive AWD', 'Adaptive M Suspension', 'Harman Kardon Sound', 'Carbon Fiber Trim']
-  },
-  {
-    id: 'audi-etron',
-    name: 'Audi RS e-tron GT',
-    type: 'electric',
-    transmission: 'automatic',
-    power: '637 HP',
-    acceleration: '3.1s 0-100 km/h',
-    price: 160,
-    description: 'Electric grand touring redefined. The RS e-tron GT delivers striking aesthetics combined with dual-motor electric performance, rapid charging capabilities, and high-quality premium comfort.',
-    features: ['Quattro AWD', 'Matrix LED Headlights', 'Adaptive Air Suspension', '800V Fast Charging', 'Head-up Display']
-  },
-  {
-    id: 'merc-g63',
-    name: 'Mercedes-Benz G63 AMG',
-    type: 'gasoline',
-    transmission: 'automatic',
-    power: '577 HP',
-    acceleration: '4.5s 0-100 km/h',
-    price: 200,
-    description: 'An iconic powerhouse of luxury and offroad capability. The Mercedes-AMG G63 is equipped with a handcrafted 4.0L V8 twin-turbo engine, presenting exceptional performance combined with outstanding presence.',
-    features: ['4.0L BiTurbo V8', '3 Locking Differentials', 'Burmester Surround Sound', 'Nappa Leather Interior', 'AMG Ride Control']
-  }
-];
+// =====================================================
+// SWAGGER
+// =====================================================
 
-const bookings = [
-  {
-    id: 'b1',
-    carId: 'tesla-s',
-    userEmail: 'vuk@example.com',
-    startDate: '2026-07-10',
-    endDate: '2026-07-14',
-    totalPrice: 600
-  }
-];
-
-// Helper to check if database ranges overlap
-function isOverlapping(start1, end1, start2, end2) {
-  const s1 = new Date(start1);
-  const e1 = new Date(end1);
-  const s2 = new Date(start2);
-  const e2 = new Date(end2);
-  return s1 <= e2 && s2 <= e1;
-}
-
-// Swagger UI mount
-// Load swagger specification from swagger.json file
 let swaggerDocument = {};
+
 try {
-  const swaggerFile = fs.readFileSync(path.join(__dirname, 'swagger.json'), 'utf8');
-  swaggerDocument = JSON.parse(swaggerFile);
+    const swaggerFile = fs.readFileSync(
+        path.join(__dirname, 'swagger.json'),
+        'utf8'
+    );
+
+    swaggerDocument = JSON.parse(swaggerFile);
+
 } catch (err) {
-  console.error("Error loading swagger.json:", err);
+    console.error(
+        'Greška pri učitavanju swagger.json:',
+        err
+    );
 }
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-// Serve Frontend static assets
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(
+    '/api-docs',
+    swaggerUi.serve,
+    swaggerUi.setup(swaggerDocument)
+);
 
-// AUTHENTICATION ROUTES
-app.post('/api/auth/register', (req, res) => {
-  const { email, password, name } = req.body;
-  if (!email || !password || !name) {
-    return res.status(400).json({ error: 'Specifikujte e-mail, lozinku i ime.' });
-  }
 
-  const existing = users.find(u => u.email.toLowerCase() === email.toLowerCase());
-  if (existing) {
-    return res.status(400).json({ error: 'Korisnik sa ovim e-mailom već postoji.' });
-  }
+// =====================================================
+// FRONTEND
+// =====================================================
 
-  const newUser = { email: email.toLowerCase(), password, name };
-  users.push(newUser);
+app.use(
+    express.static(
+        path.join(__dirname, 'public')
+    )
+);
 
-  res.status(201).json({
-    message: 'Registracija uspešna!',
-    user: { email: newUser.email, name: newUser.name }
-  });
-});
 
-app.post('/api/auth/login', (req, res) => {
-  const { email, password } = req.body;
-  if (!email || !password) {
-    return res.status(400).json({ error: 'Specifikujte e-mail i lozinku.' });
-  }
+// =====================================================
+// TEST BAZE
+// =====================================================
 
-  const user = users.find(u => u.email.toLowerCase() === email.toLowerCase() && u.password === password);
-  if (!user) {
-    return res.status(401).json({ error: 'Pogrešan e-mail ili lozinka.' });
-  }
+app.get('/api/health', async (req, res) => {
 
-  res.json({
-    message: 'Prijava uspešna!',
-    token: `mock-token-${Date.now()}`,
-    user: { email: user.email, name: user.name }
-  });
-});
+    try {
 
-// CARS INVENTORY
-app.get('/api/cars', (req, res) => {
-  res.json(cars);
-});
+        await pool.query('SELECT 1');
 
-// BOOKINGS
-app.get('/api/bookings', (req, res) => {
-  const { email } = req.query;
-  if (!email) {
-    return res.status(400).json({ error: 'Email parametar je obavezan za pregled rezervacija.' });
-  }
+        res.json({
+            database: 'PostgreSQL radi',
+            time: new Date().toISOString()
+        });
 
-  const userBookings = bookings
-    .filter(b => b.userEmail.toLowerCase() === email.toLowerCase())
-    .map(b => {
-      const car = cars.find(c => c.id === b.carId);
-      return {
-        ...b,
-        carName: car ? car.name : 'Unknown Car'
-      };
-    });
+    } catch (error) {
 
-  res.json(userBookings);
-});
+        console.error(
+            'Greška baze:',
+            error
+        );
 
-app.post('/api/bookings', (req, res) => {
-  const { carId, userEmail, startDate, endDate } = req.body;
-
-  if (!carId || !userEmail || !startDate || !endDate) {
-    return res.status(400).json({ error: 'Nedostaju obavezni parametri za rezervaciju.' });
-  }
-
-  const car = cars.find(c => c.id === carId);
-  if (!car) {
-    return res.status(404).json({ error: 'Automobil nije pronađen.' });
-  }
-
-  // Basic date validation
-  const start = new Date(startDate);
-  const end = new Date(endDate);
-  
-  if (isNaN(start.getTime()) || isNaN(end.getTime())) {
-    return res.status(400).json({ error: 'Neispravan format datuma.' });
-  }
-  
-  if (start > end) {
-    return res.status(400).json({ error: 'Datum početka mora biti pre datuma završetka.' });
-  }
-
-  const today = new Date();
-  today.setHours(0,0,0,0);
-  if (start < today) {
-    return res.status(400).json({ error: 'Ne možete rezervisati prošle datume.' });
-  }
-
-  // Overlap verification
-  const conflict = bookings.find(b => 
-    b.carId === carId && 
-    isOverlapping(b.startDate, b.endDate, startDate, endDate)
-  );
-
-  if (conflict) {
-    return res.status(400).json({ error: 'Automobil je već rezervisan za izabrani period.' });
-  }
-
-  // Calculate rental cost
-  const diffTime = Math.abs(end - start);
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // inclusive
-  const price = diffDays * car.price;
-
-  const newBooking = {
-    id: `b-${Date.now()}`,
-    carId,
-    userEmail: userEmail.toLowerCase(),
-    startDate,
-    endDate,
-    totalPrice: price
-  };
-
-  bookings.push(newBooking);
-
-  res.status(201).json({
-    message: 'Rezervacija uspešno kreirana!',
-    booking: {
-      ...newBooking,
-      carName: car.name
+        res.status(500).json({
+            database: 'PostgreSQL ne radi'
+        });
     }
-  });
 });
 
-// Fallback to serving main html for client-side routing, if any
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+
+// =====================================================
+// REGISTRACIJA
+// =====================================================
+
+app.post('/api/auth/register', async (req, res) => {
+
+    try {
+
+        const {
+            email,
+            password,
+            name
+        } = req.body;
+
+        if (!email || !password || !name) {
+
+            return res.status(400).json({
+                error:
+                    'Specifikujte e-mail, lozinku i ime.'
+            });
+        }
+
+        const existingUser =
+            await pool.query(
+                `SELECT id
+                 FROM users
+                 WHERE LOWER(email) = LOWER($1)`,
+                [email]
+            );
+
+        if (existingUser.rows.length > 0) {
+
+            return res.status(400).json({
+                error:
+                    'Korisnik sa ovim e-mailom već postoji.'
+            });
+        }
+
+        const result =
+            await pool.query(
+                `INSERT INTO users
+                    (email, password, name)
+                 VALUES
+                    ($1, $2, $3)
+                 RETURNING id, email, name`,
+                [
+                    email.toLowerCase(),
+                    password,
+                    name
+                ]
+            );
+
+        res.status(201).json({
+
+            message:
+                'Registracija uspešna!',
+
+            user:
+                result.rows[0]
+        });
+
+    } catch (error) {
+
+        console.error(
+            'Greška pri registraciji:',
+            error
+        );
+
+        res.status(500).json({
+            error:
+                'Greška servera pri registraciji.'
+        });
+    }
 });
 
-app.listen(PORT, () => {
-  console.log(`Server pokrenut na portu http://localhost:${PORT}`);
-  console.log(`Swagger dokumentacija dostupna na http://localhost:${PORT}/api-docs`);
+
+// =====================================================
+// PRIJAVA
+// =====================================================
+
+app.post('/api/auth/login', async (req, res) => {
+
+    try {
+
+        const {
+            email,
+            password
+        } = req.body;
+
+        if (!email || !password) {
+
+            return res.status(400).json({
+                error:
+                    'Specifikujte e-mail i lozinku.'
+            });
+        }
+
+        const result =
+            await pool.query(
+                `SELECT
+                    id,
+                    email,
+                    password,
+                    name
+                 FROM users
+                 WHERE LOWER(email) = LOWER($1)`,
+                [email]
+            );
+
+        if (result.rows.length === 0) {
+
+            return res.status(401).json({
+                error:
+                    'Pogrešan e-mail ili lozinka.'
+            });
+        }
+
+        const user =
+            result.rows[0];
+
+        if (user.password !== password) {
+
+            return res.status(401).json({
+                error:
+                    'Pogrešan e-mail ili lozinka.'
+            });
+        }
+
+        res.json({
+
+            message:
+                'Prijava uspešna!',
+
+            token:
+                'mock-token-' +
+                Date.now(),
+
+            user: {
+
+                id:
+                    user.id,
+
+                email:
+                    user.email,
+
+                name:
+                    user.name
+            }
+        });
+
+    } catch (error) {
+
+        console.error(
+            'Greška pri prijavi:',
+            error
+        );
+
+        res.status(500).json({
+            error:
+                'Greška servera pri prijavi.'
+        });
+    }
 });
+
+
+// =====================================================
+// VOZILA
+// =====================================================
+
+app.get('/api/cars', async (req, res) => {
+
+    try {
+
+        const result =
+            await pool.query(
+                `SELECT *
+                 FROM cars
+                 ORDER BY price`
+            );
+
+        const cars =
+            result.rows.map(car => ({
+
+                id:
+                    car.id,
+
+                name:
+                    car.name,
+
+                class:
+                    car.class,
+
+                price:
+                    Number(car.price),
+
+                monthlyPrice:
+                    Number(car.monthly_price),
+
+                type:
+                    car.type || 'petrol',
+
+                image:
+                    car.image ||
+                    '/images/car-placeholder.jpg',
+
+                description:
+                    car.description || '',
+
+                power:
+                    car.power || '',
+
+                acceleration:
+                    car.acceleration || '',
+
+                transmission:
+                    car.transmission || 'manual',
+
+                features:
+                    Array.isArray(car.features)
+                        ? car.features
+                        : []
+            }));
+
+        res.json(cars);
+
+    } catch (error) {
+
+        console.error(
+            'Greška pri učitavanju vozila:',
+            error
+        );
+
+        res.status(500).json({
+            error:
+                'Greška pri učitavanju vozila.'
+        });
+    }
+});
+
+
+// =====================================================
+// REZERVACIJE - LISTA
+// =====================================================
+
+app.get('/api/bookings', async (req, res) => {
+
+    try {
+
+        const {
+            email
+        } = req.query;
+
+        if (!email) {
+
+            return res.status(400).json({
+                error:
+                    'Email je obavezan.'
+            });
+        }
+
+        const result =
+            await pool.query(
+                `SELECT
+                    b.id,
+                    b.car_id,
+                    b.user_id,
+                    b.start_date,
+                    b.end_date,
+                    b.total_price,
+                    b.discount,
+                    c.name AS car_name,
+                    u.email AS user_email
+                 FROM bookings b
+                 JOIN users u
+                    ON u.id = b.user_id
+                 JOIN cars c
+                    ON c.id = b.car_id
+                 WHERE LOWER(u.email) = LOWER($1)
+                 ORDER BY b.start_date DESC`,
+                [email]
+            );
+
+        const bookings =
+            result.rows.map(booking => ({
+
+                id:
+                    booking.id,
+
+                carId:
+                    booking.car_id,
+
+                userId:
+                    booking.user_id,
+
+                userEmail:
+                    booking.user_email,
+
+                carName:
+                    booking.car_name,
+
+                startDate:
+                    booking.start_date,
+
+                endDate:
+                    booking.end_date,
+
+                totalPrice:
+                    Number(
+                        booking.total_price
+                    ),
+
+                discount:
+                    Number(
+                        booking.discount || 0
+                    )
+            }));
+
+        res.json(bookings);
+
+    } catch (error) {
+
+        console.error(
+            'Greška pri učitavanju rezervacija:',
+            error
+        );
+
+        res.status(500).json({
+            error:
+                'Greška servera pri učitavanju rezervacija.'
+        });
+    }
+});
+
+
+// =====================================================
+// REZERVACIJE - KREIRANJE
+// =====================================================
+
+app.post('/api/bookings', async (req, res) => {
+
+    try {
+
+        const {
+            carId,
+            userId,
+            userEmail,
+            startDate,
+            endDate
+        } = req.body;
+
+
+        // -------------------------------------------------
+        // PROVERA PODATAKA
+        // -------------------------------------------------
+
+        if (
+            !carId ||
+            !startDate ||
+            !endDate ||
+            (!userId && !userEmail)
+        ) {
+
+            return res.status(400).json({
+                error:
+                    'Nedostaju podaci za rezervaciju.'
+            });
+        }
+
+
+        // -------------------------------------------------
+        // PRONALAZAK KORISNIKA
+        // -------------------------------------------------
+
+        let userResult;
+
+
+        // Ako frontend pošalje userId,
+        // koristimo ID korisnika.
+
+        if (userId) {
+
+            userResult =
+                await pool.query(
+                    `SELECT
+                        id,
+                        email,
+                        name
+                     FROM users
+                     WHERE id = $1`,
+                    [userId]
+                );
+
+        }
+
+        // Ako nema userId,
+        // pokušavamo preko email-a.
+
+        else {
+
+            userResult =
+                await pool.query(
+                    `SELECT
+                        id,
+                        email,
+                        name
+                     FROM users
+                     WHERE LOWER(email) = LOWER($1)`,
+                    [userEmail]
+                );
+        }
+
+
+        if (userResult.rows.length === 0) {
+
+            return res.status(404).json({
+                error:
+                    'Korisnik nije pronađen.'
+            });
+        }
+
+
+        const user =
+            userResult.rows[0];
+
+
+        // -------------------------------------------------
+        // PROVERA DATUMA
+        // -------------------------------------------------
+
+        const start =
+            new Date(startDate);
+
+        const end =
+            new Date(endDate);
+
+
+        if (
+            Number.isNaN(start.getTime()) ||
+            Number.isNaN(end.getTime())
+        ) {
+
+            return res.status(400).json({
+                error:
+                    'Neispravan datum.'
+            });
+        }
+
+
+        if (end < start) {
+
+            return res.status(400).json({
+                error:
+                    'Datum vraćanja mora biti nakon datuma preuzimanja.'
+            });
+        }
+
+
+        // -------------------------------------------------
+        // PRONALAZAK AUTOMOBILA
+        // -------------------------------------------------
+
+        const carResult =
+            await pool.query(
+                `SELECT *
+                 FROM cars
+                 WHERE id = $1`,
+                [carId]
+            );
+
+
+        if (carResult.rows.length === 0) {
+
+            return res.status(404).json({
+                error:
+                    'Automobil nije pronađen.'
+            });
+        }
+
+
+        const car =
+            carResult.rows[0];
+
+
+        // -------------------------------------------------
+        // PROVERA PREKLAPANJA
+        // -------------------------------------------------
+
+        const conflictResult =
+            await pool.query(
+                `SELECT id
+                 FROM bookings
+                 WHERE car_id = $1
+                 AND start_date <= $3
+                 AND end_date >= $2
+                 LIMIT 1`,
+                [
+                    carId,
+                    startDate,
+                    endDate
+                ]
+            );
+
+
+        if (conflictResult.rows.length > 0) {
+
+            return res.status(409).json({
+                error:
+                    'Automobil je već rezervisan u izabranom periodu.'
+            });
+        }
+
+
+        // -------------------------------------------------
+        // BROJ DANA
+        // -------------------------------------------------
+
+        const millisecondsPerDay =
+            1000 * 60 * 60 * 24;
+
+
+        const diffDays =
+            Math.floor(
+                (
+                    end.getTime() -
+                    start.getTime()
+                ) /
+                millisecondsPerDay
+            ) + 1;
+
+
+        if (diffDays <= 0) {
+
+            return res.status(400).json({
+                error:
+                    'Neispravan period rezervacije.'
+            });
+        }
+
+
+        // -------------------------------------------------
+        // OBRAČUN CENE
+        // -------------------------------------------------
+
+        const regularPrice =
+            diffDays *
+            Number(car.price);
+
+
+        let totalPrice =
+            regularPrice;
+
+
+        let discount =
+            0;
+
+
+        // 15% POPUST ZA 5 I VIŠE DANA
+
+        if (diffDays >= 5) {
+
+            discount =
+                15;
+
+            totalPrice =
+                Math.round(
+                    regularPrice * 0.85
+                );
+        }
+
+
+        // -------------------------------------------------
+        // ID REZERVACIJE
+        // -------------------------------------------------
+
+        const bookingId =
+            `booking-${Date.now()}-${Math.floor(
+                Math.random() * 10000
+            )}`;
+
+
+        // -------------------------------------------------
+        // UPIS U BAZU
+        // -------------------------------------------------
+
+        const bookingResult =
+            await pool.query(
+                `INSERT INTO bookings
+                    (
+                        id,
+                        car_id,
+                        user_id,
+                        start_date,
+                        end_date,
+                        total_price,
+                        discount
+                    )
+                 VALUES
+                    (
+                        $1,
+                        $2,
+                        $3,
+                        $4,
+                        $5,
+                        $6,
+                        $7
+                    )
+                 RETURNING *`,
+                [
+                    bookingId,
+                    carId,
+                    user.id,
+                    startDate,
+                    endDate,
+                    totalPrice,
+                    discount
+                ]
+            );
+
+
+        const booking =
+            bookingResult.rows[0];
+
+
+        // -------------------------------------------------
+        // ODGOVOR
+        // -------------------------------------------------
+
+        res.status(201).json({
+
+            message:
+                'Rezervacija uspešno kreirana!',
+
+            booking: {
+
+                id:
+                    booking.id,
+
+                carId:
+                    booking.car_id,
+
+                userId:
+                    booking.user_id,
+
+                userEmail:
+                    user.email,
+
+                carName:
+                    car.name,
+
+                startDate:
+                    booking.start_date,
+
+                endDate:
+                    booking.end_date,
+
+                totalPrice:
+                    Number(
+                        booking.total_price
+                    ),
+
+                discount:
+                    Number(
+                        booking.discount || 0
+                    ),
+
+                totalDays:
+                    diffDays
+            }
+        });
+
+    } catch (error) {
+
+        console.error(
+            'Greška pri kreiranju rezervacije:',
+            error
+        );
+
+        res.status(500).json({
+            error:
+                'Greška servera pri rezervaciji.'
+        });
+    }
+});
+
+
+// =====================================================
+// POKRETANJE SERVERA
+// =====================================================
+
+app.listen(
+    PORT,
+    () => {
+
+        console.log(
+            `Server pokrenut na portu http://localhost:${PORT}`
+        );
+
+        console.log(
+            `Swagger dokumentacija: http://localhost:${PORT}/api-docs`
+        );
+    }
+);

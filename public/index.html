@@ -2,325 +2,955 @@
 <html lang="sr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Apex Drive | Premium Rent a Car</title>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <!-- FontAwesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Main CSS -->
-    <link rel="stylesheet" href="index.css">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Apex Drive | Rent a Car</title>
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="index.css"
+    >
 </head>
+
 <body>
-    <!-- Background Glow Elements -->
-    <div class="glow-bg glow-1"></div>
-    <div class="glow-bg glow-2"></div>
 
-    <!-- Notification Toast -->
-    <div id="toast" class="toast hidden"></div>
+<header class="header">
 
-    <!-- Navigation -->
-    <header class="header">
-        <div class="nav-container">
-            <a href="#" class="logo" id="nav-brand">
-                <i class="fa-solid fa-bolt logo-icon"></i>
-                APEX<span>DRIVE</span>
+    <div class="nav-container">
+
+        <a
+            href="#"
+            class="logo"
+            onclick="app.switchTab('home-section')"
+        >
+            <i class="fa-solid fa-bolt logo-icon"></i>
+            APEX<span>DRIVE</span>
+        </a>
+
+        <nav class="nav-links">
+
+            <a
+                href="#"
+                class="nav-link active"
+                data-target="home-section"
+            >
+                Početna
             </a>
-            
-            <nav class="nav-links">
-                <a href="#" class="nav-link active" data-target="home-section">Početna</a>
-                <a href="#" class="nav-link" data-target="fleet-section">Vozni Park</a>
-                <a href="#" class="nav-link" data-target="bookings-section">Moje Rezervacije</a>
-                <a href="/api-docs" class="nav-link spec-link" target="_blank">
-                    <i class="fa-solid fa-code"></i> API Docs
+
+            <a
+                href="#"
+                class="nav-link"
+                data-target="fleet-section"
+            >
+                Vozni Park
+            </a>
+
+            <a
+                href="#"
+                class="nav-link"
+                data-target="bookings-section"
+            >
+                Moje Rezervacije
+            </a>
+
+            <a
+                href="/api-docs"
+                target="_blank"
+                class="nav-link spec-link"
+            >
+                <i class="fa-solid fa-code"></i>
+                API Docs
+            </a>
+
+        </nav>
+
+        <div
+            class="nav-actions"
+            id="nav-auth-actions"
+        >
+
+            <button
+                class="btn btn-outline"
+                id="btn-show-login"
+            >
+                Prijava
+            </button>
+
+            <button
+                class="btn btn-primary"
+                id="btn-show-register"
+            >
+                Registracija
+            </button>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+<main class="main-content">
+
+<!-- =========================
+     HOME
+     ========================= -->
+
+<section
+    id="home-section"
+    class="tab-content active"
+>
+
+    <div class="hero-container">
+
+        <div class="hero-text">
+
+            <span class="badge">
+                APEX DRIVE RENT A CAR
+            </span>
+
+            <h1>
+                Pronađite automobil
+                za svako putovanje.
+            </h1>
+
+            <p>
+                Iznajmite pouzdane, moderne i udobne
+                automobile po povoljnim cenama.
+                Jednostavna rezervacija i bez skrivenih troškova.
+            </p>
+
+            <div class="hero-buttons">
+
+                <button
+                    class="btn btn-primary btn-lg"
+                    onclick="app.switchTab('fleet-section')"
+                >
+                    Pogledaj vozni park
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+
+                <button
+                    class="btn btn-outline btn-lg"
+                    onclick="app.showAuthModal('login')"
+                >
+                    Prijavi se
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div>
+
+            <div class="neon-card">
+
+                <div class="car-card-header">
+
+                    <div>
+                        <span class="car-category">
+                            PREPORUČENO VOZILO
+                        </span>
+
+                        <h3>
+                            BMW Serija 3
+                        </h3>
+                    </div>
+
+                    <span class="tag">
+                        PREMIUM
+                    </span>
+
+                </div>
+
+                <div class="fleet-image-wrapper">
+                    <img
+                        src="/images/bmw-3.jpg"
+                        alt="BMW Serija 3"
+                        class="fleet-car-image"
+                    >
+                </div>
+
+                <div class="car-specs">
+
+                    <div class="car-spec">
+                        <i class="fa-solid fa-horse"></i>
+
+                        <div>
+                            <strong>184 KS</strong>
+                            <span>Snaga</span>
+                        </div>
+                    </div>
+
+                    <div class="car-spec">
+                        <i class="fa-solid fa-stopwatch"></i>
+
+                        <div>
+                            <strong>7.4 s</strong>
+                            <span>0-100 km/h</span>
+                        </div>
+                    </div>
+
+                    <div class="car-spec">
+                        <i class="fa-solid fa-money-bill"></i>
+
+                        <div>
+                            <strong>6.500 RSD</strong>
+                            <span>Po danu</span>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="features-section">
+
+        <h2 class="section-title">
+            Zašto Apex Drive?
+        </h2>
+
+        <div class="features-grid">
+
+            <div class="feature-card">
+
+                <div class="feature-icon">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+
+                <h3>
+                    Sigurna vozila
+                </h3>
+
+                <p>
+                    Sva vozila su redovno servisirana
+                    i spremna za put.
+                </p>
+
+            </div>
+
+
+            <div class="feature-card">
+
+                <div class="feature-icon">
+                    <i class="fa-solid fa-clock"></i>
+                </div>
+
+                <h3>
+                    Podrška 24/7
+                </h3>
+
+                <p>
+                    Naš tim je dostupan kada god
+                    vam je potrebna pomoć.
+                </p>
+
+            </div>
+
+
+            <div class="feature-card">
+
+                <div class="feature-icon">
+                    <i class="fa-solid fa-key"></i>
+                </div>
+
+                <h3>
+                    Brzo preuzimanje
+                </h3>
+
+                <p>
+                    Jednostavna online rezervacija
+                    bez nepotrebnog čekanja.
+                </p>
+
+            </div>
+
+
+            <div class="feature-card">
+
+                <div class="feature-icon">
+                    <i class="fa-solid fa-tag"></i>
+                </div>
+
+                <h3>
+                    Jasne cene
+                </h3>
+
+                <p>
+                    Cena koju vidite prilikom rezervacije
+                    je cena koju plaćate.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     FLEET
+     ========================= -->
+
+<section
+    id="fleet-section"
+    class="tab-content"
+>
+
+    <div class="section-header">
+
+        <span class="badge">
+            NAŠA PONUDA
+        </span>
+
+        <h2 class="section-headline">
+            Vozni park
+        </h2>
+
+        <p class="section-sub">
+            Izaberite automobil koji odgovara vašim
+            potrebama i rezervišite ga za nekoliko sekundi.
+        </p>
+
+    </div>
+
+    <div
+        class="grid-cars"
+        id="cars-grid-container"
+    >
+
+        <div class="loading-spinner">
+            Učitavanje vozila...
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     BOOKINGS
+     ========================= -->
+
+<section
+    id="bookings-section"
+    class="tab-content"
+>
+
+    <div class="section-header">
+
+        <span class="badge">
+            KORISNIČKI PORTAL
+        </span>
+
+        <h2 class="section-headline">
+            Moje rezervacije
+        </h2>
+
+        <p class="section-sub">
+            Pregledajte svoje aktivne i prethodne rezervacije.
+        </p>
+
+    </div>
+
+
+    <div
+        id="bookings-anonymous-view"
+        class="anonymous-box"
+    >
+
+        <i
+            class="fa-solid fa-lock privacy-icon"
+        ></i>
+
+        <h3>
+            Prijava je potrebna
+        </h3>
+
+        <p>
+            Prijavite se na svoj nalog kako biste
+            pregledali rezervacije i rezervisali vozilo.
+        </p>
+
+        <div class="anonymous-buttons">
+
+            <button
+                class="btn btn-outline"
+                onclick="app.showAuthModal('login')"
+            >
+                Prijava
+            </button>
+
+            <button
+                class="btn btn-primary"
+                onclick="app.showAuthModal('register')"
+            >
+                Registracija
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div
+        id="bookings-logged-in-view"
+        class="hidden"
+    >
+
+        <div class="user-profile-summary neon-card">
+
+            <div class="user-avatar">
+                <i class="fa-solid fa-user"></i>
+            </div>
+
+            <div class="user-details">
+
+                <h3 id="profile-name">
+                    Korisnik
+                </h3>
+
+                <p id="profile-email">
+                    email
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="bookings-list-container">
+
+            <h3>
+                Vaše rezervacije
+            </h3>
+
+            <div
+                id="bookings-table-wrapper"
+                class="bookings-grid"
+            ></div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     AUTH MODAL
+     ========================= -->
+
+<div
+    id="auth-modal"
+    class="modal-backdrop hidden"
+>
+
+    <div class="modal-content">
+
+        <button
+            class="close-modal-btn"
+            id="close-auth-modal"
+        >
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+
+
+        <!-- LOGIN -->
+
+        <div id="auth-login-view">
+
+            <h2 class="modal-title">
+                Prijavite se
+            </h2>
+
+            <p class="modal-subtitle">
+                Unesite podatke svog naloga.
+            </p>
+
+            <form id="form-login">
+
+                <div class="form-group">
+
+                    <label for="login-email">
+                        Email adresa
+                    </label>
+
+                    <div class="input-wrapper">
+
+                        <i
+                            class="fa-regular fa-envelope input-icon"
+                        ></i>
+
+                        <input
+                            type="email"
+                            id="login-email"
+                            placeholder="vuk@example.com"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="login-password">
+                        Lozinka
+                    </label>
+
+                    <div class="input-wrapper">
+
+                        <i
+                            class="fa-solid fa-key input-icon"
+                        ></i>
+
+                        <input
+                            type="password"
+                            id="login-password"
+                            placeholder="••••••••"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="btn btn-primary btn-full"
+                >
+                    Prijavi se
+                    <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                </button>
+
+            </form>
+
+            <p class="auth-toggle">
+                Nemate nalog?
+                <a href="#" id="link-to-register">
+                    Registrujte se
                 </a>
-            </nav>
+            </p>
 
-            <div class="nav-actions" id="nav-auth-actions">
-                <!-- Swapped dynamically in app.js -->
-                <button class="btn btn-outline" id="btn-show-login">Prijava</button>
-                <button class="btn btn-primary" id="btn-show-register">Registracija</button>
-            </div>
         </div>
-    </header>
 
-    <!-- Main Workspace -->
-    <main class="main-content">
 
-        <!-- ================= HOME SECTION ================= -->
-        <section id="home-section" class="tab-content active">
-            <div class="hero-container">
-                <div class="hero-text">
-                    <span class="badge">DRIVE THE FUTURE</span>
-                    <h1>Iskusite Performanse bez Kompromisa</h1>
-                    <p>Iznajmite najnovije modele vrhunskih električnih i sportskih automobila. Doživite luksuz, brzinu i udobnost na svakom kilometru.</p>
-                    <div class="hero-buttons">
-                        <button class="btn btn-primary btn-lg" onclick="app.switchTab('fleet-section')">
-                            Otkrijte Vozni Park <i class="fa-solid fa-arrow-right"></i>
-                        </button>
-                        <a href="/api-docs" target="_blank" class="btn btn-outline btn-lg">
-                            Pogledaj API specifikaciju
-                        </a>
-                    </div>
-                </div>
-                <!-- Dynamic SVG Car Illustration -->
-                <div class="hero-image">
-                    <div class="car-card neon-card">
-                        <div class="car-card-header">
-                            <h3>Tesla Model S Plaid</h3>
-                            <span class="tag tag-electric">Electric</span>
-                        </div>
-                        <div class="car-illustration">
-                            <i class="fa-solid fa-car-side size-huge"></i>
-                        </div>
-                        <div class="car-metrics">
-                            <div class="metric"><span class="val">1020 HP</span><span class="lbl">Maks. Snaga</span></div>
-                            <div class="metric"><span class="val">2.1s</span><span class="lbl">0-100 km/h</span></div>
-                            <div class="metric"><span class="val">$150</span><span class="lbl">Po Danu</span></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <!-- REGISTER -->
 
-            <!-- Features Grid -->
-            <div class="features-section">
-                <h2 class="section-title">Zašto Izabrati Apex Drive?</h2>
-                <div class="features-grid">
-                    <div class="feature-card">
-                        <div class="feature-icon"><i class="fa-solid fa-shield-halved"></i></div>
-                        <h3>Kasko Osiguranje</h3>
-                        <p>Sva naša vozila su kompletno osigurana kasko osiguranjem. Vozite opušteno bez ikakvih briga o nepredviđenim troškovima.</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon"><i class="fa-solid fa-clock"></i></div>
-                        <h3>24/7 Korisnička Podrška</h3>
-                        <p>Naš tim je uvek tu za vas. Bilo da vam je potrebna pomoć na putu ili logistika, dostupni smo u svako doba dana ili noći.</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon"><i class="fa-solid fa-key"></i></div>
-                        <h3>Brzo Preuzimanje</h3>
-                        <p>Rezervišite online za par sekundi, popunite detalje i preuzmite vozilo bez dugih čekanja u redovima na lokaciji.</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon"><i class="fa-solid fa-tag"></i></div>
-                        <h3>Bez Skrivenih Troškova</h3>
-                        <p>Transparentne cene su naš prioritet. Sve što vidite pri rezervaciji je konačno - nema naknadnih doplata ili taksi.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
+        <div
+            id="auth-register-view"
+            class="hidden"
+        >
 
-        <!-- ================= FLEET SECTION ================= -->
-        <section id="fleet-section" class="tab-content">
-            <div class="section-header">
-                <span class="badge">NAŠ VOZNI PARK</span>
-                <h2 class="section-headline">Izaberite automobil za vašu sledeću vožnju</h2>
-                <p class="section-sub">Pogledajte našu selekciju premium sportskih i inovativnih električnih modela.</p>
-            </div>
-            
-            <!-- Fleet Grid -->
-            <div class="grid-cars" id="cars-grid-container">
-                <!-- Populated dynamically via app.js -->
-                <div class="loading-spinner">Učitavanje automobila...</div>
-            </div>
-        </section>
+            <h2 class="modal-title">
+                Napravite nalog
+            </h2>
 
-        <!-- ================= BOOKINGS SECTION ================= -->
-        <section id="bookings-section" class="tab-content">
-            <div class="section-header">
-                <span class="badge">KORISNIČKI PORTAL</span>
-                <h2 class="section-headline">Vaše Rezervacije</h2>
-                <p id="booking-section-desc" class="section-sub">Pregledajte zakazane vožnje i aktivna iznajmljivanja.</p>
-            </div>
+            <p class="modal-subtitle">
+                Registrujte se i počnite sa rezervacijom vozila.
+            </p>
 
-            <!-- Logged out warning -->
-            <div id="bookings-anonymous-view" class="anonymous-box">
-                <i class="fa-solid fa-lock privacy-icon"></i>
-                <h3>Zahteva se prijava</h3>
-                <p>Morate se prijaviti na svoj nalog kako biste videli istoriju vaših rezervacija ili rezervisali automobile.</p>
-                <div class="anonymous-buttons">
-                    <button class="btn btn-outline" onclick="app.showAuthModal('login')">Uloguj se</button>
-                    <button class="btn btn-primary" onclick="app.showAuthModal('register')">Registruj se</button>
-                </div>
-            </div>
+            <form id="form-register">
 
-            <!-- Logged in view -->
-            <div id="bookings-logged-in-view" class="bookings-dashboard hidden">
-                <div class="user-profile-summary neon-card">
-                    <div class="user-avatar">
-                        <i class="fa-solid fa-user"></i>
+                <div class="form-group">
+
+                    <label for="register-name">
+                        Ime i prezime
+                    </label>
+
+                    <div class="input-wrapper">
+
+                        <i
+                            class="fa-regular fa-user input-icon"
+                        ></i>
+
+                        <input
+                            type="text"
+                            id="register-name"
+                            placeholder="Vuk Ivanovic"
+                            required
+                        >
+
                     </div>
-                    <div class="user-details">
-                        <h3 id="profile-name">Vuk Ivanovic</h3>
-                        <p id="profile-email">vuk@example.com</p>
-                    </div>
+
                 </div>
 
-                <div class="bookings-list-container">
-                    <h3>Aktivne i prethodne vožnje</h3>
-                    <div id="bookings-table-wrapper" class="bookings-grid">
-                        <!-- Populated dynamically in app.js -->
-                    </div>
-                </div>
-            </div>
-        </section>
 
-        <!-- ================= AUTH MODAL ================= -->
-        <div id="auth-modal" class="modal-backdrop hidden">
-            <div class="modal-content auth-card">
-                <button class="close-modal-btn" id="close-auth-modal">
-                    <i class="fa-solid fa-xmark"></i>
+                <div class="form-group">
+
+                    <label for="register-email">
+                        Email adresa
+                    </label>
+
+                    <div class="input-wrapper">
+
+                        <i
+                            class="fa-regular fa-envelope input-icon"
+                        ></i>
+
+                        <input
+                            type="email"
+                            id="register-email"
+                            placeholder="vuk@example.com"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="register-password">
+                        Lozinka
+                    </label>
+
+                    <div class="input-wrapper">
+
+                        <i
+                            class="fa-solid fa-key input-icon"
+                        ></i>
+
+                        <input
+                            type="password"
+                            id="register-password"
+                            placeholder="••••••••"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="btn btn-primary btn-full"
+                >
+                    Registruj se
+                    <i class="fa-solid fa-user-plus"></i>
                 </button>
-                
-                <!-- Login form -->
-                <div id="auth-login-view">
-                    <h2 class="modal-title">Prijavite se</h2>
-                    <p class="modal-subtitle">Dobrodošli nazad! Unesite podatke da nastavite.</p>
-                    <form id="form-login">
-                        <div class="form-group">
-                            <label for="login-email">Email adresa</label>
-                            <div class="input-wrapper">
-                                <i class="fa-regular fa-envelope input-icon"></i>
-                                <input type="email" id="login-email" required placeholder="vuk@example.com">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="login-password">Lozinka</label>
-                            <div class="input-wrapper">
-                                <i class="fa-solid fa-key input-icon"></i>
-                                <input type="password" id="login-password" required placeholder="••••••••">
-                            </div>
-                        </div>
-                        <button type="submit" class="btn btn-primary btn-full margin-top">
-                            Prijavi se <i class="fa-solid fa-arrow-right-to-bracket"></i>
-                        </button>
-                    </form>
-                    <p class="auth-toggle">Nemate nalog? <a href="#" id="link-to-register">Registrujte se</a></p>
-                </div>
 
-                <!-- Register form -->
-                <div id="auth-register-view" class="hidden">
-                    <h2 class="modal-title">Napravite Nalog</h2>
-                    <p class="modal-subtitle">Pridružite se Apex Drive klubu i iznajmite vozila.</p>
-                    <form id="form-register">
-                        <div class="form-group">
-                            <label for="register-name">Ime i prezime</label>
-                            <div class="input-wrapper">
-                                <i class="fa-regular fa-user input-icon"></i>
-                                <input type="text" id="register-name" required placeholder="Vuk Ivanovic">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="register-email">Email adresa</label>
-                            <div class="input-wrapper">
-                                <i class="fa-regular fa-envelope input-icon"></i>
-                                <input type="email" id="register-email" required placeholder="vuk@example.com">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="register-password">Lozinka</label>
-                            <div class="input-wrapper">
-                                <i class="fa-solid fa-key input-icon"></i>
-                                <input type="password" id="register-password" required placeholder="••••••••">
-                            </div>
-                        </div>
-                        <button type="submit" class="btn btn-primary btn-full margin-top">
-                            Registruj se <i class="fa-solid fa-user-plus"></i>
-                        </button>
-                    </form>
-                    <p class="auth-toggle">Već imate nalog? <a href="#" id="link-to-login">Prijavite se</a></p>
-                </div>
-            </div>
+            </form>
+
+            <p class="auth-toggle">
+                Već imate nalog?
+                <a href="#" id="link-to-login">
+                    Prijavite se
+                </a>
+            </p>
+
         </div>
 
-        <!-- ================= BOOKING MODAL (WITH INTERACTIVE CALENDAR) ================= -->
-        <div id="booking-modal" class="modal-backdrop hidden">
-            <div class="modal-content booking-panel-card">
-                <button class="close-modal-btn" id="close-booking-modal">
-                    <i class="fa-solid fa-xmark"></i>
+    </div>
+
+</div>
+
+
+<!-- =========================
+     BOOKING MODAL
+     ========================= -->
+
+<div
+    id="booking-modal"
+    class="modal-backdrop hidden"
+>
+
+    <div class="modal-content booking-panel-card">
+
+        <button
+            class="close-modal-btn"
+            id="close-booking-modal"
+        >
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+
+
+        <h2
+            id="booking-modal-car-name"
+            class="modal-title"
+        >
+            Rezervacija
+        </h2>
+
+        <p class="modal-subtitle">
+            Izaberite datum preuzimanja i datum vraćanja.
+        </p>
+
+
+        <div class="booking-panel-layout">
+
+
+            <!-- CALENDAR -->
+
+            <div class="calendar-container">
+
+                <div class="calendar-header">
+
+                    <button
+                        id="calendar-prev"
+                        class="btn-cal-arrow"
+                    >
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </button>
+
+                    <h4 id="calendar-month-year">
+                        Avgust 2026
+                    </h4>
+
+                    <button
+                        id="calendar-next"
+                        class="btn-cal-arrow"
+                    >
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+
+                </div>
+
+
+                <div class="calendar-weekdays">
+
+                    <div>Pon</div>
+                    <div>Uto</div>
+                    <div>Sre</div>
+                    <div>Čet</div>
+                    <div>Pet</div>
+                    <div>Sub</div>
+                    <div>Ned</div>
+
+                </div>
+
+
+                <div
+                    class="calendar-days"
+                    id="calendar-days-grid"
+                ></div>
+
+
+                <div class="calendar-legend">
+
+                    <span class="legend-item">
+                        <span class="dot dot-avail"></span>
+                        Slobodno
+                    </span>
+
+                    <span class="legend-item">
+                        <span class="dot dot-booked"></span>
+                        Zauzeto
+                    </span>
+
+                    <span class="legend-item">
+                        <span class="dot dot-select"></span>
+                        Izabrano
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- CHECKOUT -->
+
+            <div class="booking-checkout-form">
+                <input
+    type="hidden"
+    id="form-booking-start-date"
+>
+
+<input
+    type="hidden"
+    id="form-booking-end-date"
+>
+
+                <div class="checkout-details-card">
+
+                    <div class="checkout-row">
+
+                        <span class="chk-label">
+                            Cena po danu:
+                        </span>
+
+                        <span
+                            class="chk-value"
+                            id="checkout-daily-rate"
+                        >
+                            0 RSD
+                        </span>
+
+                    </div>
+
+
+                    <hr class="checkout-divider">
+
+
+                    <div class="checkout-row">
+
+                        <span class="chk-label">
+                            Preuzimanje:
+                        </span>
+
+                        <span
+                            class="chk-value text-highlight"
+                            id="checkout-start-date"
+                        >
+                            -
+                        </span>
+
+                    </div>
+
+
+                    <div class="checkout-row">
+
+                        <span class="chk-label">
+                            Vraćanje:
+                        </span>
+
+                        <span
+                            class="chk-value text-highlight"
+                            id="checkout-end-date"
+                        >
+                            -
+                        </span>
+
+                    </div>
+
+
+                    <div class="checkout-row">
+
+                        <span class="chk-label">
+                            Ukupno dana:
+                        </span>
+
+                        <span
+                            class="chk-value"
+                            id="checkout-total-days"
+                        >
+                            0 dana
+                        </span>
+
+                    </div>
+
+
+                    <hr class="checkout-divider">
+
+
+                    <div class="checkout-row row-total">
+
+                        <span class="chk-label">
+                            Ukupna cena:
+                        </span>
+
+                        <span
+                            class="chk-value"
+                            id="checkout-total-price"
+                        >
+                            0 RSD
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    id="booking-auth-tip"
+                    class="auth-warning-alert"
+                >
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+
+                    Morate biti prijavljeni da biste
+                    rezervisali vozilo.
+                </div>
+
+
+                <button
+                    id="btn-submit-booking"
+                    class="btn btn-primary btn-full btn-lg"
+                    disabled
+                >
+                    Rezerviši termin
+                    <i class="fa-solid fa-calendar-check"></i>
                 </button>
-                
-                <h2 id="booking-modal-car-name" class="modal-title">Rezervišite Vozilo</h2>
-                <p class="modal-subtitle">Izaberite dane u kalendaru ispod da biste rezervisali termin.</p>
 
-                <div class="booking-panel-layout">
-                    <!-- Calendar element -->
-                    <div class="calendar-container">
-                        <div class="calendar-header">
-                            <button id="calendar-prev" class="btn-cal-arrow"><i class="fa-solid fa-chevron-left"></i></button>
-                            <h4 id="calendar-month-year">Jul 2026</h4>
-                            <button id="calendar-next" class="btn-cal-arrow"><i class="fa-solid fa-chevron-right"></i></button>
-                        </div>
-                        <div class="calendar-weekdays">
-                            <div>Pon</div><div>Uto</div><div>Sre</div><div>Čet</div><div>Pet</div><div>Sub</div><div>Ned</div>
-                        </div>
-                        <div class="calendar-days" id="calendar-days-grid">
-                            <!-- Populated dynamically via app.js -->
-                        </div>
-                        <div class="calendar-legend">
-                            <span class="legend-item"><span class="dot dot-avail"></span> Slobodno</span>
-                            <span class="legend-item"><span class="dot dot-booked"></span> Zauzeto</span>
-                            <span class="legend-item"><span class="dot dot-select"></span> Izabrano</span>
-                        </div>
-                    </div>
-
-                    <!-- Details and Checkout -->
-                    <div class="booking-checkout-form">
-                        <div class="checkout-details-card">
-                            <div class="checkout-row">
-                                <span class="chk-label">Cena po danu:</span>
-                                <span class="chk-value" id="checkout-daily-rate">$0</span>
-                            </div>
-                            <hr class="checkout-divider">
-                            <div class="checkout-row">
-                                <span class="chk-label">Datum preuzimanja:</span>
-                                <span class="chk-value text-highlight" id="checkout-start-date">-</span>
-                            </div>
-                            <div class="checkout-row">
-                                <span class="chk-label">Datum povratka:</span>
-                                <span class="chk-value text-highlight" id="checkout-end-date">-</span>
-                            </div>
-                            <div class="checkout-row">
-                                <span class="chk-label">Ukupno dana:</span>
-                                <span class="chk-value" id="checkout-total-days">0 dana</span>
-                            </div>
-                            <hr class="checkout-divider">
-                            <div class="checkout-row row-total">
-                                <span class="chk-label">Ukupna Cena:</span>
-                                <span class="chk-value" id="checkout-total-price">$0</span>
-                            </div>
-                        </div>
-
-                        <!-- Manual Date Inputs (Optional feedback helper) -->
-                        <div class="manual-inputs">
-                            <input type="hidden" id="form-booking-start-date">
-                            <input type="hidden" id="form-booking-end-date">
-                        </div>
-
-                        <div id="booking-auth-tip" class="auth-warning-alert">
-                            <i class="fa-solid fa-triangle-exclamation"></i>
-                            Morate biti prijavljeni da biste rezervisali vozilo.
-                        </div>
-
-                        <button id="btn-submit-booking" class="btn btn-primary btn-full btn-lg" disabled>
-                            Rezervisi Termin <i class="fa-solid fa-calendar-check"></i>
-                        </button>
-                    </div>
-                </div>
             </div>
+
         </div>
 
-    </main>
+    </div>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <p>&copy; 2026 Apex Drive Rent-a-Car. Razvio Vuk Ivanović. Sva prava zadržana.</p>
-        <p>Pogledajte razvojni <a href="/api-docs" target="_blank">Swagger API panel</a>.</p>
-    </footer>
+</div>
 
-    <!-- Frontend logic -->
-    <script src="app.js"></script>
+
+</main>
+
+
+<!-- =========================
+     TOAST
+     ========================= -->
+
+<div
+    id="toast"
+    class="toast hidden"
+></div>
+
+
+<footer class="footer">
+
+    <p>
+        © 2026 Apex Drive Rent-a-Car.
+        Razvio Vuk Ivanović.
+    </p>
+
+    <p>
+        <a
+            href="/api-docs"
+            target="_blank"
+        >
+            Swagger API dokumentacija
+        </a>
+    </p>
+
+</footer>
+
+
+<script src="app.js"></script>
+
 </body>
 </html>
